@@ -1,0 +1,9 @@
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "gunicorn prj_shopeasy.wsgi",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}

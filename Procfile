@@ -1,1 +1,1 @@
-web: gunicorn shopeasy.wsgi
+web: gunicorn prj_shopeasy.wsgi
