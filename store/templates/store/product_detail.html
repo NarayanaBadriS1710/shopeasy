@@ -1,0 +1,13 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div style="background: white; border-radius: 10px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:300px; object-fit:cover; border-radius:8px;">
+    {% endif %}
+    <h2 style="margin: 20px 0;">{{ product.name }}</h2>
+    <p style="color: #888; margin-bottom: 15px;">{{ product.description }}</p>
+    <p style="font-size: 24px; color: #e74c3c; margin-bottom: 20px;">₹{{ product.price }}</p>
+    <a href="{% url 'add_to_cart' product.pk %}" class="btn">Add to Cart 🛒</a>
+</div>
+{% endblock %}

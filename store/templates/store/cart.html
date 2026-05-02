@@ -1,0 +1,21 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<h2 style="margin: 20px 0;">Your Cart 🛒</h2>
+{% if order %}
+    <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        {% for item in order.items.all %}
+        <div style="display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #eee;">
+            <span>{{ item.product.name }} x {{ item.quantity }}</span>
+            <span style="color: #e74c3c;">₹{{ item.get_subtotal }}</span>
+        </div>
+        {% endfor %}
+        <h3 style="text-align: right; margin-top: 20px;">Total: ₹{{ order.get_total }}</h3>
+        <div style="text-align: right; margin-top: 20px;">
+            <a href="{% url 'product_list' %}" class="btn">Continue Shopping</a>
+        </div>
+    </div>
+{% else %}
+    <p>Your cart is empty! <a href="{% url 'product_list' %}">Shop now</a></p>
+{% endif %}
+{% endblock %}

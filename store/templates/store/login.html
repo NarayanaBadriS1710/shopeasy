@@ -1,0 +1,17 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div style="background: white; max-width: 400px; margin: 50px auto; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 20px; text-align: center;">Login</h2>
+    {% if error %}
+        <p style="color: red; text-align: center;">{{ error }}</p>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px;"><br>
+        <input type="password" name="password" placeholder="Password" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px;"><br>
+        <button type="submit" class="btn" style="width: 100%;">Login</button>
+    </form>
+    <p style="text-align: center; margin-top: 15px;">No account? <a href="{% url 'register' %}">Register</a></p>
+</div>
+{% endblock %}

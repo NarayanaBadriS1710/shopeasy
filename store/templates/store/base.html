@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ShopEasy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
+        nav { background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; font-size: 18px; margin-left: 20px; }
+        nav .logo { font-size: 24px; font-weight: bold; color: #e74c3c; }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .btn { background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
+        .btn:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+    <nav>
+    <span class="logo">🛒 ShopEasy</span>
+    <div>
+        <a href="{% url 'product_list' %}">Home</a>
+        <a href="{% url 'cart' %}">Cart</a>
+        {% if request.user.is_authenticated %}
+            <span style="color: white;">Hi, {{ request.user.username }}!</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </div>
+</nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
