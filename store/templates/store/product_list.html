@@ -1,4 +1,5 @@
 {% extends 'store/base.html' %}
+{% load cloudinary %}
 
 {% block content %}
 <h2 style="margin: 20px 0;">All Products</h2>
@@ -6,7 +7,7 @@
     {% for product in products %}
     <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
         {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
+            {% cloudinary product.image width=400 height=200 crop="fill" %}
         {% endif %}
         <h3 style="margin: 10px 0;">{{ product.name }}</h3>
         <p style="color: #888;">{{ product.description|truncatewords:15 }}</p>
@@ -14,8 +15,7 @@
         <a href="{% url 'product_detail' product.pk %}" class="btn">View Details</a>
     </div>
     {% empty %}
-        <p>No products available yet. Add some from the admin panel!</p>
+        <p>No products available yet!</p>
     {% endfor %}
 </div>
 {% endblock %}
-
