@@ -98,6 +98,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Cloudinary config
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+
 cloudinary.config(
     cloud_name = os.environ.get('CLOUD_NAME'),
     api_key = os.environ.get('CLOUDINARY_API_KEY'),
