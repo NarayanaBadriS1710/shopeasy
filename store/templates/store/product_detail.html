@@ -1,12 +1,14 @@
 {% extends 'store/base.html' %}
-{% load cloudinary %}
 
 {% block content %}
 <div style="background: white; border-radius: 10px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     {% if product.image %}
-        {% cloudinary product.image width=600 height=300 crop="fill" style="width:100%; height:300px; object-fit:cover; border-radius:8px;" %}
+        <img src="{{ product.image.url }}" 
+             alt="{{ product.name }}" 
+             style="width:100%; height:300px; object-fit:cover; border-radius:8px;"
+             onerror="this.src='https://placehold.co/600x300?text=No+Image'">
     {% else %}
-        <img src="https://via.placeholder.com/600x300?text=No+Image"
+        <img src="https://placehold.co/600x300?text=No+Image"
              style="width:100%; height:300px; object-fit:cover; border-radius:8px;">
     {% endif %}
     <h2 style="margin: 20px 0;">{{ product.name }}</h2>
