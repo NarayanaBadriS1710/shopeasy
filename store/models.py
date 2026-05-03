@@ -12,7 +12,6 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-
 class Order(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -23,7 +22,6 @@ class Order(models.Model):
 
     def get_total(self):
         return sum(item.get_subtotal() for item in self.items.all())
-
 
 class OrderItem(models.Model):
     order    = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')

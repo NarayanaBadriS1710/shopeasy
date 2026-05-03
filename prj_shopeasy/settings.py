@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import cloudinary
+import dj_database_url
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -66,12 +67,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'prj_shopeasy.wsgi.application'
 
-# Database
+# Database - PostgreSQL
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -94,10 +95,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Cloudinary config
 # Cloudinary config
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 
@@ -117,3 +114,4 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = 'https://res.cloudinary.com/drx3g3ivs/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
