@@ -1,3 +1,6 @@
+import os
+
+
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Order, OrderItem
 from django.contrib.auth.decorators import login_required
@@ -65,3 +68,14 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+from django.http import JsonResponse
+import cloudinary.uploader
+
+def test_cloudinary(request):
+    config = {
+        'cloud_name': os.environ.get('CLOUD_NAME'),
+        'api_key': os.environ.get('CLOUDINARY_API_KEY'),
+        'api_secret': os.environ.get('CLOUDINARY_API_SECRET'),
+    }
+    return JsonResponse(config)    
