@@ -11,8 +11,9 @@
         </div>
         {% endfor %}
         <h3 style="text-align: right; margin-top: 20px;">Total: ₹{{ order.get_total }}</h3>
-        <div style="text-align: right; margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
             <a href="{% url 'product_list' %}" class="btn">Continue Shopping</a>
+            <a href="{% url 'place_order' %}" class="btn" style="background: #27ae60;">Place Order ✅</a>
         </div>
     </div>
 {% else %}

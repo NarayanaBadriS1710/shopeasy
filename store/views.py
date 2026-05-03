@@ -1,14 +1,24 @@
 import os
-
-
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Order, OrderItem
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Product, Order, OrderItem, Category
+from .forms import RegisterForm
 
 # Show all products
 def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'store/product_list.html', {'products': products})
+    categories = Category.objects.all()
+    category_id = request.GET.get('category')
+    if category_id:
+        products = Product.objects.filter(category_id=category_id)
+    else:
+        products = Product.objects.all()
+    return render(request, 'store/product_list.html', {
+        'products': products,
+        'categories': categories,
+        'selected_category': int(category_id) if category_id else None
+    })
 
 # Show single product
 def product_detail(request, pk):
@@ -35,11 +45,27 @@ def cart(request):
         order = None
     return render(request, 'store/cart.html', {'order': order})
 
+# Place order
+@login_required
+def place_order(request):
+    try:
+        order = Order.objects.get(user=request.user, is_paid=False)
+        order.is_paid = True
+        order.save()
+        return redirect('order_confirmation')
+    except Order.DoesNotExist:
+        return redirect('cart')
 
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm
+# Order confirmation
+@login_required
+def order_confirmation(request):
+    try:
+        order = Order.objects.filter(user=request.user, is_paid=True).latest('created_at')
+    except Order.DoesNotExist:
+        order = None
+    return render(request, 'store/order_confirmation.html', {'order': order})
 
+# Register
 def register_view(request):
     form = RegisterForm()
     if request.method == 'POST':
@@ -52,6 +78,7 @@ def register_view(request):
             return redirect('product_list')
     return render(request, 'store/register.html', {'form': form})
 
+# Login
 def login_view(request):
     error = None
     if request.method == 'POST':
@@ -65,17 +92,16 @@ def login_view(request):
             error = "Invalid username or password!"
     return render(request, 'store/login.html', {'error': error})
 
+# Logout
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-from django.http import JsonResponse
-import cloudinary.uploader
-
+# Test Cloudinary
 def test_cloudinary(request):
     config = {
         'cloud_name': os.environ.get('CLOUD_NAME'),
         'api_key': os.environ.get('CLOUDINARY_API_KEY'),
         'api_secret': os.environ.get('CLOUDINARY_API_SECRET'),
     }
-    return JsonResponse(config)    
+    return JsonResponse(config)

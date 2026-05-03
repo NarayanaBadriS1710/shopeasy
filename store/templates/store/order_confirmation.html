@@ -1,0 +1,25 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div style="background: white; border-radius: 10px; padding: 30px; max-width: 600px; margin: 50px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+    <h1 style="color: #27ae60;">🎉 Order Placed Successfully!</h1>
+    <p style="color: #888; margin: 20px 0;">Thank you for shopping with ShopEasy!</p>
+    
+    {% if order %}
+    <div style="text-align: left; margin: 20px 0;">
+        <h3 style="margin-bottom: 15px;">Order Summary:</h3>
+        {% for item in order.items.all %}
+        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+            <span>{{ item.product.name }} x {{ item.quantity }}</span>
+            <span style="color: #e74c3c;">₹{{ item.get_subtotal }}</span>
+        </div>
+        {% endfor %}
+        <h3 style="text-align: right; margin-top: 15px;">Total: ₹{{ order.get_total }}</h3>
+    </div>
+    {% endif %}
+
+    <a href="{% url 'product_list' %}" class="btn" style="margin-top: 20px; display: inline-block;">
+        Continue Shopping 🛒
+    </a>
+</div>
+{% endblock %}
