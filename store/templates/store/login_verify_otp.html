@@ -1,0 +1,25 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div style="background: white; max-width: 400px; margin: 80px auto; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; margin-bottom: 10px;">✉️ Enter OTP</h2>
+    <p style="text-align: center; color: #888; margin-bottom: 20px;">OTP sent to <strong>{{ email }}</strong></p>
+
+    {% if error %}
+        <p style="color: red; text-align: center;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="otp" placeholder="Enter 6-digit OTP" maxlength="6" required
+               style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px; font-size:20px; text-align:center; letter-spacing:8px;">
+        <button type="submit" class="btn" style="width:100%; padding:12px; font-size:16px;">
+            Verify OTP ✅
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 15px;">
+        <a href="{% url 'login_request_otp' %}" style="color: #e74c3c;">Resend OTP</a>
+    </p>
+</div>
+{% endblock %}

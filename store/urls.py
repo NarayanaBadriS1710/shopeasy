@@ -8,8 +8,8 @@ urlpatterns = [
     path('cart/',               views.cart,               name='cart'),
     path('place-order/',        views.place_order,        name='place_order'),
     path('order-confirmation/', views.order_confirmation, name='order_confirmation'),
-    path('register/',           views.register_view,      name='register'),
-    path('login/',              views.login_view,         name='login'),
+    path('login/',              views.login_request_otp,  name='login_request_otp'),
+    path('verify-otp/',         views.login_verify_otp,   name='login_verify_otp'),
     path('logout/',             views.logout_view,        name='logout'),
     path('test-cloudinary/',    views.test_cloudinary,    name='test_cloudinary'),
 ]

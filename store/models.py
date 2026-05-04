@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from cloudinary.models import CloudinaryField
+import random
+from django.utils import timezone
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -10,6 +13,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
+
 
 class Product(models.Model):
     category    = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
@@ -22,6 +26,7 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
 class Order(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,6 +38,7 @@ class Order(models.Model):
     def get_total(self):
         return sum(item.get_subtotal() for item in self.items.all())
 
+
 class OrderItem(models.Model):
     order    = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product  = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -43,3 +49,16 @@ class OrderItem(models.Model):
 
     def get_subtotal(self):
         return self.product.price * self.quantity
+
+
+class OTP(models.Model):
+    phone_or_email = models.CharField(max_length=200)
+    otp_code       = models.CharField(max_length=6)
+    created_at     = models.DateTimeField(auto_now_add=True)
+    is_used        = models.BooleanField(default=False)
+
+    def is_valid(self):
+        return not self.is_used and (timezone.now() - self.created_at).seconds < 300
+
+    def __str__(self):
+        return f"OTP for {self.phone_or_email}"

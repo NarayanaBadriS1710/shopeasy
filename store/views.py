@@ -1,10 +1,11 @@
 import os
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Product, Order, OrderItem, Category
-from .forms import RegisterForm
+from .models import Product, Order, OrderItem, Category, OTP
+from .otp_utils import generate_otp, send_otp_email
 
 # Show all products
 def product_list(request):
@@ -65,37 +66,83 @@ def order_confirmation(request):
         order = None
     return render(request, 'store/order_confirmation.html', {'order': order})
 
-# Register
-def register_view(request):
-    form = RegisterForm()
+# Step 1 - Enter email to get OTP
+def login_request_otp(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            login(request, user)
-            return redirect('product_list')
-    return render(request, 'store/register.html', {'form': form})
+        email = request.POST.get('email', '').strip().lower()
+        if not email:
+            return render(request, 'store/login_request_otp.html', {'error': 'Please enter your email!'})
 
-# Login
-def login_view(request):
-    error = None
+        # Generate and save OTP
+        otp_code = generate_otp()
+        OTP.objects.create(phone_or_email=email, otp_code=otp_code)
+
+        # Send OTP email
+        try:
+            send_otp_email(email, otp_code)
+        except Exception as e:
+            return render(request, 'store/login_request_otp.html', {'error': f'Failed to send OTP: {str(e)}'})
+
+        # Save email in session
+        request.session['otp_email'] = email
+        return redirect('login_verify_otp')
+
+    return render(request, 'store/login_request_otp.html')
+
+# Step 2 - Enter OTP to login
+def login_verify_otp(request):
+    email = request.session.get('otp_email')
+    if not email:
+        return redirect('login_request_otp')
+
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)
-            return redirect('product_list')
-        else:
-            error = "Invalid username or password!"
-    return render(request, 'store/login.html', {'error': error})
+        entered_otp = request.POST.get('otp', '').strip()
+
+        # Find latest unused OTP for this email
+        try:
+            otp_obj = OTP.objects.filter(
+                phone_or_email=email,
+                is_used=False
+            ).latest('created_at')
+        except OTP.DoesNotExist:
+            return render(request, 'store/login_verify_otp.html', {
+                'error': 'OTP not found. Please request again.',
+                'email': email
+            })
+
+        if not otp_obj.is_valid():
+            return render(request, 'store/login_verify_otp.html', {
+                'error': 'OTP expired! Please request a new one.',
+                'email': email
+            })
+
+        if otp_obj.otp_code != entered_otp:
+            return render(request, 'store/login_verify_otp.html', {
+                'error': 'Wrong OTP! Please try again.',
+                'email': email
+            })
+
+        # OTP is correct - mark as used
+        otp_obj.is_used = True
+        otp_obj.save()
+
+        # Get or create user
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={'username': email}
+        )
+
+        # Login the user
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        del request.session['otp_email']
+        return redirect('product_list')
+
+    return render(request, 'store/login_verify_otp.html', {'email': email})
 
 # Logout
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('login_request_otp')
 
 # Test Cloudinary
 def test_cloudinary(request):
