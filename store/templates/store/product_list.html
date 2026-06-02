@@ -4,39 +4,48 @@
 
 <!-- Categories Bar -->
 <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
-    <a href="{% url 'product_list' %}" 
-       style="padding: 8px 20px; background: {% if not selected_category %}#e74c3c{% else %}#2c3e50{% endif %}; color: white; border-radius: 20px; text-decoration: none;">
+    <a href="{% url 'product_list' %}"
+       style="padding: 8px 20px; background: {% if not selected_category %}#e74c3c{% else %}#2c3e50{% endif %}; color: white; border-radius: 20px; text-decoration: none; font-weight: bold;">
         All
     </a>
     {% for category in categories %}
-    <a href="?category={{ category.id }}" 
-       style="padding: 8px 20px; background: {% if selected_category == category.id %}#e74c3c{% else %}#2c3e50{% endif %}; color: white; border-radius: 20px; text-decoration: none;">
+    <a href="{% url 'product_list' %}?category={{ category.id }}"
+       style="padding: 8px 20px; background: {% if selected_category == category.id %}#e74c3c{% else %}#2c3e50{% endif %}; color: white; border-radius: 20px; text-decoration: none; font-weight: bold;">
         {{ category.name }}
     </a>
     {% endfor %}
 </div>
 
 <!-- Products Grid -->
-<h2 style="margin: 20px 0;">All Products</h2>
+<h2 style="margin: 20px 0;">
+    {% if selected_category %}
+        {% for category in categories %}{% if category.id == selected_category %}{{ category.name }}{% endif %}{% endfor %}
+    {% else %}
+        All Products
+    {% endif %}
+</h2>
+
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
     {% for product in products %}
-    <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
         {% if product.image %}
             <img src="{{ product.image.url }}"
                  alt="{{ product.name }}"
-                 style="width:100%; height:200px; object-fit:cover; border-radius:8px;"
+                 style="width:100%; height:200px; object-fit:cover;"
                  onerror="this.src='https://placehold.co/400x200?text=No+Image'">
         {% else %}
             <img src="https://placehold.co/400x200?text=No+Image"
-                 style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
+                 style="width:100%; height:200px; object-fit:cover;">
         {% endif %}
-        <h3 style="margin: 10px 0;">{{ product.name }}</h3>
-        <p style="color: #888;">{{ product.description|truncatewords:15 }}</p>
-        <p style="font-size: 20px; color: #e74c3c; margin: 10px 0;">₹{{ product.price }}</p>
-        <a href="{% url 'product_detail' product.pk %}" class="btn">View Details</a>
+        <div style="padding: 15px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 16px;">{{ product.name }}</h3>
+            <p style="color: #888; font-size: 13px; margin-bottom: 8px;">{{ product.description|truncatewords:10 }}</p>
+            <p style="font-size: 20px; color: #e74c3c; margin: 8px 0; font-weight: bold;">₹{{ product.price }}</p>
+            <a href="{% url 'product_detail' product.pk %}" class="btn" style="display: block; text-align: center;">View Details</a>
+        </div>
     </div>
     {% empty %}
-        <p>No products in this category yet!</p>
+        <p style="color: #888; padding: 20px;">No products in this category yet!</p>
     {% endfor %}
 </div>
 {% endblock %}

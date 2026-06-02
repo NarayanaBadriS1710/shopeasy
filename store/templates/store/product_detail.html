@@ -1,19 +1,50 @@
 {% extends 'store/base.html' %}
 
 {% block content %}
-<div style="background: white; border-radius: 10px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-    {% if product.image %}
-        <img src="{{ product.image.url }}" 
-             alt="{{ product.name }}" 
-             style="width:100%; height:300px; object-fit:cover; border-radius:8px;"
-             onerror="this.src='https://placehold.co/600x300?text=No+Image'">
-    {% else %}
-        <img src="https://placehold.co/600x300?text=No+Image"
-             style="width:100%; height:300px; object-fit:cover; border-radius:8px;">
-    {% endif %}
-    <h2 style="margin: 20px 0;">{{ product.name }}</h2>
-    <p style="color: #888; margin-bottom: 15px;">{{ product.description }}</p>
-    <p style="font-size: 24px; color: #e74c3c; margin-bottom: 20px;">₹{{ product.price }}</p>
-    <a href="{% url 'add_to_cart' product.pk %}" class="btn">Add to Cart 🛒</a>
+
+<!-- Main Product -->
+<div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; gap: 30px; margin-bottom: 40px;">
+    <div style="flex: 1;">
+        {% if product.image %}
+            <img src="{{ product.image.url }}"
+                 alt="{{ product.name }}"
+                 style="width:100%; height:350px; object-fit:cover; border-radius:8px;"
+                 onerror="this.src='https://placehold.co/600x350?text=No+Image'">
+        {% else %}
+            <img src="https://placehold.co/600x350?text=No+Image"
+                 style="width:100%; height:350px; object-fit:cover; border-radius:8px;">
+        {% endif %}
+    </div>
+    <div style="flex: 1;">
+        <h2 style="margin-bottom: 15px;">{{ product.name }}</h2>
+        <p style="color: #888; margin-bottom: 20px; line-height: 1.6;">{{ product.description }}</p>
+        <p style="font-size: 28px; color: #e74c3c; margin-bottom: 20px; font-weight: bold;">₹{{ product.price }}</p>
+        <p style="color: #27ae60; margin-bottom: 20px;">✅ In Stock: {{ product.stock }} items</p>
+        <a href="{% url 'add_to_cart' product.pk %}" class="btn" style="font-size: 16px; padding: 12px 30px;">Add to Cart 🛒</a>
+    </div>
 </div>
+
+<!-- Other Products -->
+<h3 style="margin-bottom: 20px;">Other Products You May Like</h3>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+    {% for other in other_products %}
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        {% if other.image %}
+            <img src="{{ other.image.url }}"
+                 alt="{{ other.name }}"
+                 style="width:100%; height:150px; object-fit:cover;"
+                 onerror="this.src='https://placehold.co/200x150?text=No+Image'">
+        {% else %}
+            <img src="https://placehold.co/200x150?text=No+Image"
+                 style="width:100%; height:150px; object-fit:cover;">
+        {% endif %}
+        <div style="padding: 10px;">
+            <h4 style="font-size: 13px; margin-bottom: 5px;">{{ other.name }}</h4>
+            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 8px;">₹{{ other.price }}</p>
+            <a href="{% url 'product_detail' other.pk %}" class="btn" style="font-size: 12px; padding: 6px 12px; display: block; text-align: center;">View</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}
