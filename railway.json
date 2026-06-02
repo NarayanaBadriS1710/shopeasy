@@ -3,7 +3,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "python manage.py migrate && gunicorn prj_shopeasy.wsgi",
+    "startCommand": "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn prj_shopeasy.wsgi",
     "restartPolicyType": "ON_FAILURE"
   }
 }
